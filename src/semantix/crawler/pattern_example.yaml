@@ -1,0 +1,57 @@
+# Example YAML pattern configuration for job URL extraction
+# This file defines how to extract job posting URLs and metadata from company career pages
+
+# Company information
+company_name: "Example Company"
+
+# Optional: Wait for dynamic content to load
+wait_for:
+  type: "selector"  # or "timeout"
+  value: ".job-listing"  # CSS selector to wait for, or milliseconds for timeout
+
+# Job URL selectors - list of patterns to find job posting links
+job_url_selectors:
+  # Primary job listing links
+  - selector: "a.job-link"  # CSS selector for job links
+    attribute: "href"  # Attribute containing the URL (default: href)
+    
+    # Metadata extraction for each job listing
+    metadata:
+      title:
+        selector: ".job-title"  # CSS selector for job title
+        attribute: "text"  # Extract text content
+        transform: "strip"  # Optional: strip, lower, upper
+      
+      location:
+        selector: ".job-location"
+        attribute: "text"
+        transform: "strip"
+      
+      department:
+        selector: ".job-department"
+        attribute: "text"
+        transform: "strip"
+      
+      job_type:
+        selector: ".job-type"
+        attribute: "text"
+        transform: "strip"
+      
+      posted_date:
+        selector: ".job-posted-date"
+        attribute: "data-date"  # Extract from attribute instead of text
+  
+  # Alternative pattern for different page layouts
+  - selector: ".career-listing a"
+    attribute: "href"
+    
+    metadata:
+      title: ".position-title::text"  # Simplified CSS selector
+      location: ".location-info::text"
+      department: ".dept-name::text"
+
+# Optional: Additional configuration
+crawl_settings:
+  respect_robots_txt: true
+  delay_between_requests: 2  # seconds
+  max_concurrent_requests: 1

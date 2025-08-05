@@ -1,0 +1,53 @@
+# Apple Jobs YAML pattern configuration
+# Configuration for extracting job URLs from Apple's career page
+
+company_name: "Apple Inc."
+
+# Wait for dynamic content to load
+wait_for:
+  type: "timeout"
+  value: 5000
+
+# Job URL selectors for Apple's career page
+job_url_selectors:
+  # Primary job listing links - try multiple patterns
+  - selector: "a[href*='/en-us/details/'], a[href*='/details/'], a[href*='job'], .job-link a, .job-listing a"
+    attribute: "href"
+    
+    # Metadata extraction for each job listing - simplified for debugging
+    metadata:
+
+# URL validation patterns for post-processing
+url_validation:
+  # Valid job URL pattern for Apple
+  valid_pattern: "^https://jobs\\.apple\\.com/en-us/details/(?P<job_id>\\d+)/(?P<job_title>[^/?]+)(?:\\?team=(?P<team>[^&]+))?.*$"
+  # Invalid URL patterns to exclude
+  invalid_patterns:
+    - "locationPicker$"  # URLs ending with locationPicker
+    - "\\.pdf$"          # PDF files
+    - "\\.jpg$|\\.jpeg$|\\.png$|\\.gif$"  # Image files
+  # Required fields to extract from valid URLs
+  extracted_fields:
+    - "job_id"
+    - "team"
+    - "job_title"
+
+# Pagination configuration
+pagination:
+  enabled: true
+  page_param: "page"  # URL parameter name for page number
+  start_page: 1       # Starting page number
+  # Stop condition: check if next page button is disabled
+  next_button_selector: 'button[data-analytics-pagination="next"]'
+  next_button_disabled_attribute: "disabled"  # Attribute that indicates button is disabled
+  # Previous page button for reference
+  prev_button_selector: 'button[data-analytics-pagination="prev"]'
+
+# Crawl settings
+crawl_settings:
+  respect_robots_txt: true
+  delay_between_requests: 5  # Increased delay to avoid rate limiting
+  max_concurrent_requests: 1
+  randomize_delay: true      # Add randomness to requests
+  timeout_seconds: 60        # Page load timeout
+  retry_attempts: 3          # Retry failed pages
