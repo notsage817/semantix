@@ -1,0 +1,19 @@
+# Changes here will be overwritten by Copier
+_commit: 0.4.0
+_src_path: https://github.com/pdm-project/copier-pdm.git
+author_email: kwangusc91@gmail.com
+author_fullname: Kang Wang
+author_username: ''
+build_doc: true
+copyright_date: '2025'
+copyright_holder: Kang Wang
+copyright_holder_email: kwangusc91@gmail.com
+copyright_license: MIT
+project_description: Build your own searchable data for AI deep research
+project_name: semantix
+python_package_distribution_name: semantix
+python_package_import_name: semantix
+python_package_requires_python: '>=3.10'
+repository_name: semantix
+repository_namespace: ''
+
