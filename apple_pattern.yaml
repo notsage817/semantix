@@ -51,3 +51,191 @@ crawl_settings:
   randomize_delay: true      # Add randomness to requests
   timeout_seconds: 60        # Page load timeout
   retry_attempts: 3          # Retry failed pages
+
+# =============================================================================
+# HTML EXTRACTION CONFIGURATION
+# Configuration for extracting job posting data from downloaded HTML files
+# =============================================================================
+
+# Basic job information extraction
+html_extraction:
+  basic_info:
+    job_id:
+      selector: "#jobdetails-jobnumber"
+      attribute: text
+      required: true
+      
+    title:
+      selector: "title"
+      attribute: text
+      required: true
+      transform: "extract_job_title_from_page_title"  # Remove " - Jobs - Careers at Apple"
+      
+    company:
+      default: "Apple Inc."
+      
+    source_url:
+      selector: 'meta[property="og:url"]'
+      attribute: content
+      
+    source_platform:
+      default: "jobs.apple.com"
+
+  # Time-related information
+  time_info:
+    publish_date:
+      selector: "#jobdetails-jobpostdate"
+      attribute: datetime
+      
+    scraped_date:
+      default: "current_timestamp"
+
+  # Location information
+  location:
+    location:
+      selector: "#jobdetails-joblocation"
+      attribute: text
+      fallback_selectors:
+        - ".jobdetails-location"
+        - "[data-job-location]"
+      transform: "clean_location"
+
+  # Job content sections
+  content:
+    summary:
+      selector: "#jobdetails-jobdetails-jobsummary-content-row span"
+      attribute: text
+      transform: "clean_whitespace"
+      
+    description:
+      selector: "#jobdetails-jobdetails-jobdescription-content-row span"
+      attribute: text
+      transform: "clean_whitespace"
+      
+    # Requirements sections
+    required_qualifications:
+      selector: "#jobdetails-jobdetails-minimumqualifications-content-row"
+      attribute: text
+      transform: "extract_bullet_points"
+      
+    preferred_qualifications:
+      selector: "#jobdetails-jobdetails-preferredqualifications-content-row"
+      attribute: text
+      transform: "extract_bullet_points"
+      
+    # Pay and benefits
+    pay_benefit:
+      selector: "#jobdetails-jobdetails-postingsupplementfooter-0-content-row span"
+      attribute: text
+      transform: "clean_whitespace"
+
+  # Team/Department information (may be in URL or metadata)
+  team_info:
+    team:
+      selector: null  # Will be extracted from URL query param "team"
+      url_param: "team"
+    
+    department:
+      selector: null  # Could be inferred from team or job category
+
+  # Apply information
+  application:
+    application_url:
+      selector: "#jobdetails-jobdetails-jobdetailfooter-actions-jobdetailssubmitresume"
+      attribute: href
+      transform: "make_absolute_url"
+
+  # Skills extraction (from qualifications text)
+  skills_extraction:
+    # These are patterns to look for in the qualifications text
+    technical_skills_patterns:
+      - "\\b(Python|Java|C\\+\\+|JavaScript|Swift|Objective-C|Kotlin|Go|Rust|Ruby|PHP)\\b"
+      - "\\b(iOS|Android|macOS|Windows|Linux|Unix)\\b"
+      - "\\b(React|Vue|Angular|Django|Flask|Node\\.js|Express)\\b"
+      - "\\b(AWS|Azure|GCP|Docker|Kubernetes|Jenkins|Git)\\b"
+      - "\\b(SQL|PostgreSQL|MySQL|MongoDB|Redis|Elasticsearch)\\b"
+      - "\\b(Machine Learning|AI|TensorFlow|PyTorch|Scikit-learn)\\b"
+      - "\\b(HTML|CSS|JavaScript|TypeScript|SCSS|Bootstrap)\\b"
+      - "\\b(RESTful|GraphQL|API|Microservices|gRPC)\\b"
+      
+    soft_skills_patterns:
+      - "\\bcommunication skills\\b"
+      - "\\bproblem solving\\b"
+      - "\\bteamwork\\b"
+      - "\\bleadership\\b"
+      - "\\banalytical thinking\\b"
+      - "\\battention to detail\\b"
+      - "\\btime management\\b"
+      - "\\badaptability\\b"
+
+  # Salary extraction patterns (from pay_benefit text)
+  salary_patterns:
+    salary_range_pattern: "\\$([0-9,]+).*?\\$([0-9,]+)"
+    hourly_rate_pattern: "\\$([0-9.]+).*?hour"
+    
+  # Experience level extraction (from title and qualifications)
+  experience_patterns:
+    entry_level: ["entry", "junior", "associate", "new grad", "recent graduate"]
+    mid_level: ["mid", "mid-level", "3-5 years", "4-6 years"]
+    senior_level: ["senior", "lead", "principal", "staff", "5\\+ years", "7\\+ years"]
+    director: ["director", "head of", "VP", "vice president"]
+    executive: ["executive", "CEO", "CTO", "CPO", "chief"]
+
+  # Job type patterns (from title or description)
+  job_type_patterns:
+    full_time: ["full.?time", "permanent", "regular"]
+    part_time: ["part.?time", "part time"]
+    contract: ["contract", "contractor", "consulting"]
+    internship: ["\\bintern\\b", "internship", "co-op"]
+    temporary: ["temporary", "temp", "seasonal"]
+
+  # Work arrangement patterns
+  work_arrangement_patterns:
+    remote: ["remote", "work from home", "distributed", "anywhere"]
+    hybrid: ["hybrid", "flexible", "mix of remote"]
+    on_site: ["on.?site", "in.?person", "office based"]
+
+  # Data cleaning transformations
+  transformations:
+    extract_job_title_from_page_title:
+      type: "regex_replace"
+      pattern: " - Jobs.*?$"
+      replacement: ""
+      
+    clean_location:
+      type: "regex_replace"
+      pattern: "\\s+"
+      replacement: " "
+      
+    clean_whitespace:
+      type: "whitespace_normalize"
+      
+    extract_bullet_points:
+      type: "bullet_points_to_list"
+      
+    make_absolute_url:
+      type: "absolute_url"
+      base_url: "https://jobs.apple.com"
+
+  # Error handling
+  error_handling:
+    missing_required_fields: "skip_record"  # or "use_default" or "raise_error"
+    invalid_selectors: "log_warning"
+    transformation_errors: "use_original_value"
+
+  # Validation rules
+  validation:
+    job_id:
+      - type: "not_empty"
+      - type: "numeric"
+    
+    title:
+      - type: "not_empty"
+      - type: "min_length"
+        value: 5
+        
+    publish_date:
+      - type: "valid_date"
+      
+    salary_range:
+      - type: "logical_range"  # min <= max
