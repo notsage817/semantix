@@ -1,0 +1,15 @@
+services:
+  semantix-frontend:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "0.0.0.0:9501:8501"
+    environment:
+      - PYTHONPATH=/app
+      - ELASTICSEARCH_URL=http://host.docker.internal:9200
+    volumes:
+      - ../frontend:/app:ro
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
