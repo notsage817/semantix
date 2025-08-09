@@ -16,6 +16,8 @@ dependencies = [
     "scrapy-playwright>=0.0.31",
     "pyyaml>=6.0",
     "click>=8.0.0",
+    "streamlit>=1.48.0",
+    "requests>=2.32.4",
 ]
 dynamic = ["version"]
 
