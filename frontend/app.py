@@ -47,6 +47,21 @@ st.markdown("""
     margin: 0.5rem 0;
     border-left: 4px solid #666;
 }
+/* Light blue color for selected options in multiselect */
+.stMultiSelect span[data-baseweb="tag"] {
+    background-color: #e3f2fd !important;
+    color: #1976d2 !important;
+}
+/* Hide the invisible trigger button */
+button[data-testid="baseButton-secondary"] {
+    display: none !important;
+}
+/* Make text input bigger like a text area */
+.stTextInput > div > div > input {
+    height: 150px !important;
+    resize: vertical !important;
+    padding: 12px !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -119,33 +134,31 @@ def main():
         )
     
     with col2:
-        # Search input
+        # Search input - using text_input with callback for Enter key submission
+        def on_search_submit():
+            if st.session_state.search_input and st.session_state.search_input.strip():
+                query = st.session_state.search_input.strip()
+                if query != st.session_state.get("last_processed_query", ""):
+                    st.session_state.last_processed_query = query
+                    # Process the query
+                    with st.spinner('Processing your request...'):
+                        response = make_elasticsearch_request(query, categories)
+                        # Add to chat history
+                        st.session_state.chat_history.append({
+                            'query': query,
+                            'category': categories,
+                            'response': response
+                        })
+                    # Clear the input
+                    st.session_state.search_input = ""
+        
         query = st.text_input(
             "Enter your question or search query:",
-            placeholder="Type your message here...",
+            placeholder="Type your message here and press Enter...",
             label_visibility="collapsed",
-            key="search_input"
+            key="search_input",
+            on_change=on_search_submit
         )
-    
-    # Check if query was entered and is different from last processed query
-    current_query = st.session_state.get("search_input", "")
-    if current_query and current_query.strip() and current_query != st.session_state.last_processed_query:
-        st.session_state.last_processed_query = current_query
-        
-        # Add loading spinner
-        with st.spinner('Processing your request...'):
-            # Make request to Elasticsearch
-            response = make_elasticsearch_request(current_query, categories)
-            
-            # Add to chat history
-            st.session_state.chat_history.append({
-                'query': current_query,
-                'category': categories,
-                'response': response
-            })
-            
-            # Rerun to update the display
-            st.rerun()
 
 if __name__ == "__main__":
     main()
