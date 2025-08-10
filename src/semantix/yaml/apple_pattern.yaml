@@ -13,7 +13,7 @@ job_url_selectors:
   # Primary job listing links - try multiple patterns
   - selector: "a[href*='/en-us/details/'], a[href*='/details/'], a[href*='job'], .job-link a, .job-listing a"
     attribute: "href"
-    
+
     # Metadata extraction for each job listing - simplified for debugging
     metadata:
 
@@ -64,20 +64,20 @@ html_extraction:
       selector: "#jobdetails-jobnumber"
       attribute: text
       required: true
-      
+
     title:
       selector: "title"
       attribute: text
       required: true
       transform: "extract_job_title_from_page_title"  # Remove " - Jobs - Careers at Apple"
-      
+
     company:
       default: "Apple Inc."
-      
+
     source_url:
       selector: 'meta[property="og:url"]'
       attribute: content
-      
+
     source_platform:
       default: "jobs.apple.com"
 
@@ -86,7 +86,7 @@ html_extraction:
     publish_date:
       selector: "#jobdetails-jobpostdate"
       attribute: datetime
-      
+
     scraped_date:
       default: "current_timestamp"
 
@@ -106,23 +106,23 @@ html_extraction:
       selector: "#jobdetails-jobdetails-jobsummary-content-row span"
       attribute: text
       transform: "clean_whitespace"
-      
+
     description:
       selector: "#jobdetails-jobdetails-jobdescription-content-row span"
       attribute: text
       transform: "clean_whitespace"
-      
+
     # Requirements sections
     required_qualifications:
       selector: "#jobdetails-jobdetails-minimumqualifications-content-row"
       attribute: text
       transform: "extract_bullet_points"
-      
+
     preferred_qualifications:
       selector: "#jobdetails-jobdetails-preferredqualifications-content-row"
       attribute: text
       transform: "extract_bullet_points"
-      
+
     # Pay and benefits
     pay_benefit:
       selector: "#jobdetails-jobdetails-postingsupplementfooter-0-content-row span"
@@ -134,7 +134,7 @@ html_extraction:
     team:
       selector: null  # Will be extracted from URL query param "team"
       url_param: "team"
-    
+
     department:
       selector: null  # Could be inferred from team or job category
 
@@ -157,7 +157,7 @@ html_extraction:
       - "\\b(Machine Learning|AI|TensorFlow|PyTorch|Scikit-learn)\\b"
       - "\\b(HTML|CSS|JavaScript|TypeScript|SCSS|Bootstrap)\\b"
       - "\\b(RESTful|GraphQL|API|Microservices|gRPC)\\b"
-      
+
     soft_skills_patterns:
       - "\\bcommunication skills\\b"
       - "\\bproblem solving\\b"
@@ -172,7 +172,7 @@ html_extraction:
   salary_patterns:
     salary_range_pattern: "\\$([0-9,]+).*?\\$([0-9,]+)"
     hourly_rate_pattern: "\\$([0-9.]+).*?hour"
-    
+
   # Experience level extraction (from title and qualifications)
   experience_patterns:
     entry_level: ["entry", "junior", "associate", "new grad", "recent graduate"]
@@ -201,18 +201,18 @@ html_extraction:
       type: "regex_replace"
       pattern: " - Jobs.*?$"
       replacement: ""
-      
+
     clean_location:
       type: "regex_replace"
       pattern: "\\s+"
       replacement: " "
-      
+
     clean_whitespace:
       type: "whitespace_normalize"
-      
+
     extract_bullet_points:
       type: "bullet_points_to_list"
-      
+
     make_absolute_url:
       type: "absolute_url"
       base_url: "https://jobs.apple.com"
@@ -228,14 +228,14 @@ html_extraction:
     job_id:
       - type: "not_empty"
       - type: "numeric"
-    
+
     title:
       - type: "not_empty"
       - type: "min_length"
         value: 5
-        
+
     publish_date:
       - type: "valid_date"
-      
+
     salary_range:
       - type: "logical_range"  # min <= max

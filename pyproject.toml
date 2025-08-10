@@ -43,6 +43,10 @@ test = [
 dev = [
     "towncrier>=19.2",
     "parver>=0.3",
+    "pre-commit>=2.0.0",
+    "types-requests>=2.0.0",
+    "types-PyYAML>=6.0.0",
+    "mypy>=1.0.0",
 ]
 
 doc = [
@@ -92,6 +96,10 @@ disallow_untyped_decorators = true
 namespace_packages = true
 mypy_path = "src"
 explicit_package_bases = true
+exclude = [
+    "^frontend/",
+    "^tests/",
+]
 
 [tool.towncrier]
 package = "semantix"

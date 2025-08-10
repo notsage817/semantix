@@ -29,6 +29,7 @@ markdown_extensions:
   - pymdownx.magiclink
   - pymdownx.snippets:
       check_paths: true
+      base_path: ".."
   - pymdownx.superfences
   - pymdownx.tabbed
   - pymdownx.tasklist

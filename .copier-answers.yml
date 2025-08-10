@@ -16,4 +16,3 @@ python_package_import_name: semantix
 python_package_requires_python: '>=3.10'
 repository_name: semantix
 repository_namespace: ''
-
