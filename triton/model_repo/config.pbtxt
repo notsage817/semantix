@@ -1,0 +1,28 @@
+name: "Qwen3-Embedding-4B"
+backend: "python" # We are using a Python backend for custom logic
+
+max_batch_size: 0 # Maximum batch size for requests
+
+input [
+  {
+    name: "Query" # Name of the input tensor
+    data_type: TYPE_STRING # Qwen3 takes text input as strings
+    dims: [ -1, -1 ] # -1 means variable batch size. Each element is a string.
+  }
+]
+
+output [
+  {
+    name: "Embedding" # Name of the output tensor
+    data_type: TYPE_FP32 # Output will be floating-point embeddings
+    dims: [ -1, 2560 ] # -1 for batch size, 1024 is a common embedding dimension for Qwen3-0.6B
+                       # Adjust 1024 if you use a different Qwen3 model version (e.g., 8B)
+  }
+]
+
+instance_group [
+  {
+    count: 1
+    kind: KIND_GPU # Use GPU if available
+  }
+]
