@@ -1,0 +1,17 @@
+name: "es_fetcher"
+backend: "python"
+max_batch_size: 0
+
+input [
+  { name: "ElasticsearchQuery" data_type: TYPE_STRING dims: [ 1 ] },
+  { name: "K"                  data_type: TYPE_INT32  dims: [ 1] },
+  { name: "Embedding"          data_type: TYPE_FP32   dims: [ 1, 2560 ] }
+]
+
+output [
+  { name: "Responses" data_type: TYPE_STRING dims: [ -1 ] }
+]
+
+instance_group [
+  { kind: KIND_CPU, count: 1 }
+]
