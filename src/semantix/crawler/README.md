@@ -63,7 +63,7 @@ metadata:
     selector: ".job-title"
     attribute: "text"  # or any HTML attribute
     transform: "strip"  # optional: strip, lower, upper
-  
+
   location: ".location::text"  # simplified syntax
 ```
 
