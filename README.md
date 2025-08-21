@@ -1,6 +1,6 @@
 # semantix
 
-Build your own searchable data for AI deep research
+Build your own knowlege base for AI deep research
 
 ## Requirements
 
