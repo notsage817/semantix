@@ -44,9 +44,9 @@ class TritonPythonModel:
 
             # --- Last-Token Pooling Logic ---
             # Get the last hidden state of the model.
-            last_hidden_state = outputs.last_hidden_state
+            last_hidden_state = outputs.last_hidden_state.to(torch.float32)
 
-            # We need to find the position of the last non-padding token for each sequence in the batch.
+            # Find the position of the last non-padding token for each sequence in the batch.
             # `attention_mask` is a tensor of 1s (for real tokens) and 0s (for padding).
             attention_mask = input_encoded['attention_mask']
 

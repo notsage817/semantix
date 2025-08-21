@@ -48,22 +48,16 @@ class TritonPythonModel:
                 for file in response['hits']['hits']:
                     info = file['_source']
                     score = file['_score']
-                    jobs_found.append({'job_id':info['job_id'], 
-                                    'title':info['title'],
-                                    'company':info['company'],
-                                    'score':score,
-                                    'url':info['source_url']
-                                    })
+                    del info['qwen3_embedding']
+                    jobs_found.append(json.dumps({'title':info['title'],
+                                        'url':info['source_url'],
+                                        'job': info,
+                                        'score':score}))
             else:
                 return ValueError
-                
-            for job in jobs_found:
-                jobs.append('{'+','.join(str(k)+':'+str(v) for k,v in job.items())+'}')
-            results='/n'.join(jobs)
-            output_data = np.array([results.encode('utf-8')], dtype=object)
-            output_tensor = pb_utils.Tensor("Responses", output_data)
-            response = pb_utils.InferenceResponse(output_tensors=[output_tensor])
-            responses.append(response)
+            
+            output_tensor = pb_utils.Tensor("Responses",np.array(jobs_found, dtype=np.object_))
+        responses.append(pb_utils.InferenceResponse(output_tensors=[output_tensor]))
         return responses
 
     def finalize(self):

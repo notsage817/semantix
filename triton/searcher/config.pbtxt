@@ -1,7 +1,7 @@
 # ensemble_model/config.pbtxt
 name: "searcher"
 platform: "ensemble"
-max_batch_size: 1
+max_batch_size: 0
 
 input [
   {

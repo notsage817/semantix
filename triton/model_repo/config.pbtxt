@@ -15,7 +15,7 @@ output [
   {
     name: "Embedding" # Name of the output tensor
     data_type: TYPE_FP32 # Output will be floating-point embeddings
-    dims: [ -1, 2560 ] # -1 for batch size, 1024 is a common embedding dimension for Qwen3-0.6B
+    dims: [ 1, 2560 ] # -1 for batch size, 1024 is a common embedding dimension for Qwen3-0.6B
                        # Adjust 1024 if you use a different Qwen3 model version (e.g., 8B)
   }
 ]

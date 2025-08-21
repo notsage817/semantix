@@ -25,3 +25,10 @@ __pypackages__/
 .idea/
 
 CLAUDE.md
+mapping.json
+src/semantix/elasticsearch/exp.ipynb
+src/semantix/elasticsearch/experiment.py
+src/semantix/elasticsearch/index-mapping-check.py
+tests/elasticsearch_test.py
+tests/embedding_test.py
+tests/exampel.txt
