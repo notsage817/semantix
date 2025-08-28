@@ -40,7 +40,17 @@ if __name__ == '__main__':
                     "type": "text"
                 }
             }}}
-        es.indices.create(index=INDEX_NAME)
+        es.indices.create(index=INDEX_NAME,
+                          settings={
+                              "index": {
+                                  "number_of_shards":2,
+                                  "number_of_replicas":1
+                              }
+                          })
 
-    path_to_json_dir = "/home/hjx/elasticSearch/data/embedding_json"
-    index_json_files(path_to_json_dir)
+    path_to_json_dir = "/home/hjx/workspace/elasticSearch/data/embedding_json"
+    for company in os.listdir(path_to_json_dir):
+        dirs = os.listdir(os.path.join(path_to_json_dir,company))
+        latest = str(max(map(int, [d for d in dirs if d.isdigit()])))
+        index_json_files(os.path.join(path_to_json_dir, company+'/'+latest))
+        print(f"{company} indexing completed.")

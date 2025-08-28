@@ -9,7 +9,7 @@ class TritonPythonModel:
     """
 
     def initialize(self, args):
-        self.es=Elasticsearch("http://host.docker.internal:9200")
+        self.es=Elasticsearch("http://elasticsearch:9200", request_timeout=60)
         self.index_name="jobs-json-embedding"
 
     def execute(self, requests):
